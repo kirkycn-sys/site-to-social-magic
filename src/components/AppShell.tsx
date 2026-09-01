@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
-import { History, LogOut, Sparkles } from "lucide-react";
+import { History, LogOut, Sparkles, Zap } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useSession } from "@/hooks/use-session";
 import { Button } from "@/components/ui/button";
@@ -24,6 +24,11 @@ export function AppShell({ children }: { children: ReactNode }) {
           <div className="flex items-center gap-1">
             {user ? (
               <>
+                <Button asChild size="sm" variant="ghost" className="h-8 px-2 text-muted-foreground">
+                  <Link to="/credits">
+                    <Zap className="size-4" />
+                  </Link>
+                </Button>
                 <Button asChild size="sm" variant="ghost" className="h-8 px-2 text-muted-foreground">
                   <Link to="/history">
                     <History className="size-4" />

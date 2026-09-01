@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ArrowRight, Link2, Loader2, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { AppShell } from "@/components/AppShell";
@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useSession } from "@/hooks/use-session";
 import { PLATFORMS, generatePosts, type PlatformId } from "@/lib/generate.functions";
+import { DAILY_FREE_GENERATIONS, getCreditStatus } from "@/lib/credits.functions";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -39,6 +40,14 @@ function Index() {
   const [summary, setSummary] = useState<string | null>(null);
 
   const generate = useServerFn(generatePosts);
+  const fetchCredits = useServerFn(getCreditStatus);
+  const queryClient = useQueryClient();
+
+  const credits = useQuery({
+    queryKey: ["credit-status"],
+    queryFn: () => fetchCredits(),
+    enabled: !!user,
+  });
 
   const mutation = useMutation({
     mutationFn: (input: { url: string; platform: PlatformId }) => generate({ data: input }),
@@ -46,8 +55,12 @@ function Index() {
       setPosts(result.posts as GeneratedPost[]);
       setSummary(result.generation.site_summary ?? null);
       toast.success(`${result.posts.length} posts ready`);
+      queryClient.invalidateQueries({ queryKey: ["credit-status"] });
     },
-    onError: (error: Error) => toast.error(error.message || "Generation failed"),
+    onError: (error: Error) => {
+      queryClient.invalidateQueries({ queryKey: ["credit-status"] });
+      toast.error(error.message || "Generation failed");
+    },
   });
 
   const onSubmit = (event: React.FormEvent) => {
@@ -75,6 +88,24 @@ function Index() {
           posts in the voice of your chosen platform.
         </p>
       </section>
+
+      {user && credits.data && (
+        <Link
+          to="/credits"
+          className="mt-5 flex items-center justify-between rounded-2xl border border-border bg-surface px-4 py-3 text-sm"
+        >
+          <span className="text-muted-foreground">
+            {credits.data.freeRemaining > 0
+              ? `${credits.data.freeRemaining} of ${DAILY_FREE_GENERATIONS} free generations left today`
+              : credits.data.credits > 0
+                ? `${credits.data.credits} credits left`
+                : "Out of generations for today"}
+          </span>
+          <span className="font-medium text-accent">
+            {credits.data.canGenerate ? "Plans" : "Get credits"}
+          </span>
+        </Link>
+      )}
 
       <form onSubmit={onSubmit} className="mt-6 space-y-4">
         <div className="relative">
@@ -112,7 +143,12 @@ function Index() {
 
         <Button
           type="submit"
-          disabled={mutation.isPending || loading || !url.trim()}
+          disabled={
+            mutation.isPending ||
+            loading ||
+            !url.trim() ||
+            (!!user && credits.data ? !credits.data.canGenerate : false)
+          }
           className="h-12 w-full rounded-xl text-base font-semibold shadow-glow"
         >
           {mutation.isPending ? (
