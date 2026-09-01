@@ -72,7 +72,24 @@ export const generatePosts = createServerFn({ method: "POST" })
 
     const url = normalizeUrl(data.url);
 
+    const { data: creditRows, error: creditError } =
+      await context.supabase.rpc("consume_generation_credit");
+    if (creditError) throw new Error(creditError.message);
+    const credit = Array.isArray(creditRows) ? creditRows[0] : creditRows;
+    if (!credit?.allowed) {
+      throw new Error(
+        "You've used your free generations for today. Grab a credit pack to keep going.",
+      );
+    }
+    const refund = async () => {
+      await context.supabase.rpc("refund_generation_credit", {
+        _source: credit.source ?? "free",
+      });
+    };
+
+    try {
     let html = "";
+
     try {
       const res = await fetch(url, {
         headers: { "user-agent": "Mozilla/5.0 (compatible; SiteToSocialBot/1.0)" },
