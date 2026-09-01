@@ -41,8 +41,9 @@ function extractReadableText(html: string) {
     .trim();
 
   return {
-    title: titleMatch ? titleMatch[1].replace(/\s+/g, " ").trim().slice(0, 200) : null,
-    description: descMatch ? descMatch[1].slice(0, 400) : null,
+    title: titleMatch?.[1] ? titleMatch[1].replace(/\s+/g, " ").trim().slice(0, 200) : null,
+    description: descMatch?.[1] ? descMatch[1].slice(0, 400) : null,
+
     body: text.slice(0, 12000),
   };
 }
