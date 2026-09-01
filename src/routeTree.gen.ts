@@ -14,6 +14,7 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedCreditsRouteImport } from './routes/_authenticated/credits'
 import { Route as AuthenticatedHistoryRouteImport } from './routes/_authenticated/history'
+import { Route as AuthenticatedVideoRouteImport } from './routes/_authenticated/video'
 import { Route as AuthenticatedGIdRouteImport } from './routes/_authenticated/g.$id'
 
 const IndexRoute = IndexRouteImport.update({
@@ -40,6 +41,11 @@ const AuthenticatedHistoryRoute = AuthenticatedHistoryRouteImport.update({
   path: '/history',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedVideoRoute = AuthenticatedVideoRouteImport.update({
+  id: '/video',
+  path: '/video',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedGIdRoute = AuthenticatedGIdRouteImport.update({
   id: '/g/$id',
   path: '/g/$id',
@@ -51,6 +57,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/credits': typeof AuthenticatedCreditsRoute
   '/history': typeof AuthenticatedHistoryRoute
+  '/video': typeof AuthenticatedVideoRoute
   '/g/$id': typeof AuthenticatedGIdRoute
 }
 export interface FileRoutesByTo {
@@ -58,6 +65,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/credits': typeof AuthenticatedCreditsRoute
   '/history': typeof AuthenticatedHistoryRoute
+  '/video': typeof AuthenticatedVideoRoute
   '/g/$id': typeof AuthenticatedGIdRoute
 }
 export interface FileRoutesById {
@@ -67,13 +75,14 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/_authenticated/credits': typeof AuthenticatedCreditsRoute
   '/_authenticated/history': typeof AuthenticatedHistoryRoute
+  '/_authenticated/video': typeof AuthenticatedVideoRoute
   '/_authenticated/g/$id': typeof AuthenticatedGIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth' | '/credits' | '/history' | '/g/$id'
+  fullPaths: '/' | '/auth' | '/credits' | '/history' | '/video' | '/g/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/credits' | '/history' | '/g/$id'
+  to: '/' | '/auth' | '/credits' | '/history' | '/video' | '/g/$id'
   id:
     | '__root__'
     | '/'
@@ -81,6 +90,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/_authenticated/credits'
     | '/_authenticated/history'
+    | '/_authenticated/video'
     | '/_authenticated/g/$id'
   fileRoutesById: FileRoutesById
 }
@@ -127,6 +137,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedHistoryRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/video': {
+      id: '/_authenticated/video'
+      path: '/video'
+      fullPath: '/video'
+      preLoaderRoute: typeof AuthenticatedVideoRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/g/$id': {
       id: '/_authenticated/g/$id'
       path: '/g/$id'
@@ -140,12 +157,14 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedCreditsRoute: typeof AuthenticatedCreditsRoute
   AuthenticatedHistoryRoute: typeof AuthenticatedHistoryRoute
+  AuthenticatedVideoRoute: typeof AuthenticatedVideoRoute
   AuthenticatedGIdRoute: typeof AuthenticatedGIdRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedCreditsRoute: AuthenticatedCreditsRoute,
   AuthenticatedHistoryRoute: AuthenticatedHistoryRoute,
+  AuthenticatedVideoRoute: AuthenticatedVideoRoute,
   AuthenticatedGIdRoute: AuthenticatedGIdRoute,
 }
 
