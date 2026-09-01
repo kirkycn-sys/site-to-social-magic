@@ -1,24 +1,164 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { useState } from "react";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
+import { useMutation } from "@tanstack/react-query";
+import { ArrowRight, Link2, Loader2, Sparkles } from "lucide-react";
+import { toast } from "sonner";
+import { AppShell } from "@/components/AppShell";
+import { PostCard, type GeneratedPost } from "@/components/PostCard";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { useSession } from "@/hooks/use-session";
+import { PLATFORMS, generatePosts, type PlatformId } from "@/lib/generate.functions";
 
-// No head() here: the home route inherits title/description/og/twitter from
-// __root.tsx, and ships no og:image so serve-time hosting can inject the
-// project's social preview (explicit og:image or latest screenshot).
 export const Route = createFileRoute("/")({
+  head: () => ({
+    meta: [
+      { title: "SiteToSocial — Turn a website into 20 social posts" },
+      {
+        name: "description",
+        content:
+          "Paste any website URL and instantly get 20 ready-to-publish posts written for X, LinkedIn, Instagram, Facebook or TikTok.",
+      },
+      { property: "og:title", content: "SiteToSocial — 20 posts from one link" },
+      {
+        property: "og:description",
+        content: "Paste a link, pick a platform, get 20 publish-ready social posts.",
+      },
+    ],
+  }),
   component: Index,
 });
 
-// IMPORTANT: Replace this placeholder. See ./README.md for routing conventions.
 function Index() {
+  const { user, loading } = useSession();
+  const navigate = useNavigate();
+  const [url, setUrl] = useState("");
+  const [platform, setPlatform] = useState<PlatformId>("x");
+  const [posts, setPosts] = useState<GeneratedPost[]>([]);
+  const [summary, setSummary] = useState<string | null>(null);
+
+  const generate = useServerFn(generatePosts);
+
+  const mutation = useMutation({
+    mutationFn: (input: { url: string; platform: PlatformId }) => generate({ data: input }),
+    onSuccess: (result) => {
+      setPosts(result.posts as GeneratedPost[]);
+      setSummary(result.generation.site_summary ?? null);
+      toast.success(`${result.posts.length} posts ready`);
+    },
+    onError: (error: Error) => toast.error(error.message || "Generation failed"),
+  });
+
+  const onSubmit = (event: React.FormEvent) => {
+    event.preventDefault();
+    if (!url.trim()) return;
+    if (!user) {
+      navigate({ to: "/auth" });
+      return;
+    }
+    setPosts([]);
+    setSummary(null);
+    mutation.mutate({ url: url.trim(), platform });
+  };
+
   return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
-    >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
-      />
-    </div>
+    <AppShell>
+      <section className="pb-2">
+        <h1 className="font-display text-[2rem] leading-[1.1] font-bold">
+          One link in.
+          <br />
+          <span className="text-gradient-brand">Twenty posts out.</span>
+        </h1>
+        <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+          Drop in any website and SiteToSocial reads the page, then writes 20 publish-ready
+          posts in the voice of your chosen platform.
+        </p>
+      </section>
+
+      <form onSubmit={onSubmit} className="mt-6 space-y-4">
+        <div className="relative">
+          <Link2 className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            value={url}
+            onChange={(e) => setUrl(e.target.value)}
+            inputMode="url"
+            autoCapitalize="none"
+            autoCorrect="off"
+            placeholder="yourwebsite.com"
+            className="h-12 rounded-xl border-border bg-card pl-9 text-base"
+          />
+        </div>
+
+        <div className="flex flex-wrap gap-2">
+          {PLATFORMS.map((p) => {
+            const active = p.id === platform;
+            return (
+              <button
+                key={p.id}
+                type="button"
+                onClick={() => setPlatform(p.id)}
+                className={
+                  active
+                    ? "rounded-full bg-primary px-3.5 py-2 text-sm font-medium text-primary-foreground shadow-glow transition"
+                    : "rounded-full border border-border bg-card px-3.5 py-2 text-sm font-medium text-muted-foreground transition hover:text-foreground"
+                }
+              >
+                {p.label}
+              </button>
+            );
+          })}
+        </div>
+
+        <Button
+          type="submit"
+          disabled={mutation.isPending || loading || !url.trim()}
+          className="h-12 w-full rounded-xl text-base font-semibold shadow-glow"
+        >
+          {mutation.isPending ? (
+            <>
+              <Loader2 className="size-4 animate-spin" /> Reading the site…
+            </>
+          ) : user ? (
+            <>
+              <Sparkles className="size-4" /> Generate 20 posts
+            </>
+          ) : (
+            <>
+              Sign in to generate <ArrowRight className="size-4" />
+            </>
+          )}
+        </Button>
+      </form>
+
+      {mutation.isPending && (
+        <div className="mt-6 space-y-3">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="h-28 animate-pulse rounded-2xl border border-border bg-card" />
+          ))}
+        </div>
+      )}
+
+      {posts.length > 0 && (
+        <section className="mt-8">
+          {summary && (
+            <p className="rounded-2xl border border-border bg-surface p-4 text-sm text-muted-foreground">
+              {summary}
+            </p>
+          )}
+          <div className="mt-4 flex items-center justify-between">
+            <h2 className="font-display text-lg font-semibold">Your 20 posts</h2>
+            <Link to="/history" className="text-sm text-accent">
+              History
+            </Link>
+          </div>
+          <div className="mt-3 space-y-3">
+            {posts.map((post, index) => (
+              <PostCard key={post.id ?? index} post={post} index={index} />
+            ))}
+          </div>
+        </section>
+      )}
+    </AppShell>
   );
 }
