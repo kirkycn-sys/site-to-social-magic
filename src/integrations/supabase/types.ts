@@ -14,6 +14,36 @@ export type Database = {
   }
   public: {
     Tables: {
+      brand_profiles: {
+        Row: {
+          accent_color: string
+          company_name: string | null
+          created_at: string
+          logo_path: string | null
+          phone: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          accent_color?: string
+          company_name?: string | null
+          created_at?: string
+          logo_path?: string | null
+          phone?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          accent_color?: string
+          company_name?: string | null
+          created_at?: string
+          logo_path?: string | null
+          phone?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       generations: {
         Row: {
           created_at: string
@@ -109,11 +139,66 @@ export type Database = {
         }
         Relationships: []
       }
+      videos: {
+        Row: {
+          created_at: string
+          credits_spent: number
+          error: string | null
+          headline: string | null
+          id: string
+          job_id: string | null
+          prompt: string | null
+          site_title: string | null
+          status: string
+          storage_path: string | null
+          updated_at: string
+          url: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          credits_spent?: number
+          error?: string | null
+          headline?: string | null
+          id?: string
+          job_id?: string | null
+          prompt?: string | null
+          site_title?: string | null
+          status?: string
+          storage_path?: string | null
+          updated_at?: string
+          url: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          credits_spent?: number
+          error?: string | null
+          headline?: string | null
+          id?: string
+          job_id?: string | null
+          prompt?: string | null
+          site_title?: string | null
+          status?: string
+          storage_path?: string | null
+          updated_at?: string
+          url?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
+      consume_credits: {
+        Args: { _amount: number }
+        Returns: {
+          allowed: boolean
+          credits: number
+        }[]
+      }
       consume_generation_credit: {
         Args: never
         Returns: {
@@ -130,6 +215,7 @@ export type Database = {
           free_remaining: number
         }[]
       }
+      refund_credits: { Args: { _amount: number }; Returns: undefined }
       refund_generation_credit: {
         Args: { _source: string }
         Returns: undefined
