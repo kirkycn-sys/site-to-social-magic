@@ -14,7 +14,74 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      generations: {
+        Row: {
+          created_at: string
+          id: string
+          platform: string
+          site_summary: string | null
+          site_title: string | null
+          url: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          platform: string
+          site_summary?: string | null
+          site_title?: string | null
+          url: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          platform?: string
+          site_summary?: string | null
+          site_title?: string | null
+          url?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      posts: {
+        Row: {
+          content: string
+          created_at: string
+          generation_id: string
+          hashtags: string[]
+          id: string
+          position: number
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          generation_id: string
+          hashtags?: string[]
+          id?: string
+          position?: number
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          generation_id?: string
+          hashtags?: string[]
+          id?: string
+          position?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "posts_generation_id_fkey"
+            columns: ["generation_id"]
+            isOneToOne: false
+            referencedRelation: "generations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
