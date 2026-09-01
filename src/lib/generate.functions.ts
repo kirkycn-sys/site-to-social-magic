@@ -217,4 +217,9 @@ export const generatePosts = createServerFn({ method: "POST" })
     if (postError) throw new Error(postError.message);
 
     return { generation, posts: savedPosts ?? [] };
+    } catch (err) {
+      await refund();
+      throw err;
+    }
   });
+
