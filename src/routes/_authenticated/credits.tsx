@@ -20,9 +20,10 @@ const PACK_PRICE_IDS: Record<string, string> = {
 };
 
 export const Route = createFileRoute("/_authenticated/credits")({
-  validateSearch: (search: Record<string, unknown>): { session_id?: string } => ({
-    session_id: typeof search.session_id === "string" ? search.session_id : undefined,
-  }),
+  validateSearch: (search: Record<string, unknown>): { session_id?: string } => {
+    const raw = search["session_id"];
+    return typeof raw === "string" ? { session_id: raw } : {};
+  },
   head: () => ({
     meta: [
       { title: "Credits & plans — SiteToSocial" },
