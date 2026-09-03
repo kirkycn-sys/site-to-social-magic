@@ -96,10 +96,10 @@ function Index() {
         >
           <span className="text-muted-foreground">
             {credits.data.freeRemaining > 0
-              ? `${credits.data.freeRemaining} of ${DAILY_FREE_GENERATIONS} free generations left today`
+              ? `${credits.data.freeRemaining} of ${DAILY_FREE_GENERATIONS} free generations left`
               : credits.data.credits > 0
                 ? `${credits.data.credits} credits left`
-                : "Out of generations for today"}
+                : "Out of free generations"}
           </span>
           <span className="font-medium text-accent">
             {credits.data.canGenerate ? "Plans" : "Get credits"}

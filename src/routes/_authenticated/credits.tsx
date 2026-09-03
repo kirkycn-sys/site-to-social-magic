@@ -72,13 +72,13 @@ function CreditsPage() {
       <PaymentTestModeBanner />
       <h1 className="font-display text-2xl font-bold">Credits &amp; plans</h1>
       <p className="mt-2 text-sm text-muted-foreground">
-        Every account gets {DAILY_FREE_GENERATIONS} free generations a day. Need more? Credit
+        Every account gets {DAILY_FREE_GENERATIONS} free generations. Need more? Credit
         packs never expire.
       </p>
 
       <div className="mt-5 grid grid-cols-2 gap-3">
         <div className="rounded-2xl border border-border bg-card p-4">
-          <p className="text-xs uppercase tracking-wide text-muted-foreground">Free today</p>
+          <p className="text-xs uppercase tracking-wide text-muted-foreground">Free left</p>
           <p className="mt-1 font-display text-2xl font-bold">
             {isLoading ? "—" : `${data?.freeRemaining ?? 0}/${DAILY_FREE_GENERATIONS}`}
           </p>
