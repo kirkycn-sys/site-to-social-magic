@@ -1,7 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
-export const DAILY_FREE_GENERATIONS = 3;
+export const FREE_GENERATIONS_TOTAL = 3;
 
 export const CREDIT_PACKS = [
   { id: "starter", credits: 50, price: "$9", blurb: "Great for a single brand" },

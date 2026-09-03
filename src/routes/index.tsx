@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useSession } from "@/hooks/use-session";
 import { PLATFORMS, generatePosts, type PlatformId } from "@/lib/generate.functions";
-import { DAILY_FREE_GENERATIONS, getCreditStatus } from "@/lib/credits.functions";
+import { FREE_GENERATIONS_TOTAL, getCreditStatus } from "@/lib/credits.functions";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -96,7 +96,7 @@ function Index() {
         >
           <span className="text-muted-foreground">
             {credits.data.freeRemaining > 0
-              ? `${credits.data.freeRemaining} of ${DAILY_FREE_GENERATIONS} free generations left`
+              ? `${credits.data.freeRemaining} of ${FREE_GENERATIONS_TOTAL} free generations left (one-time)`
               : credits.data.credits > 0
                 ? `${credits.data.credits} credits left`
                 : "Out of free generations"}
