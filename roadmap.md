@@ -6,4 +6,4 @@
 - [x] Short video generator from website content (8s, 9:16)
 - [x] Brand kit: company name, phone number, logo — shown in the video overlay
 - [x] Charge 20 credits per video (paid credits only, no free videos)
-- [ ] Connect real checkout (Paddle) so credit purchases pay out to the owner
+- [ ] Wire Stripe checkout for credit packs (products, checkout, webhook grants credits)
