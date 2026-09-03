@@ -10,7 +10,7 @@ import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
 import { useStripeCheckout } from "@/hooks/useStripeCheckout";
 import {
   CREDIT_PACKS,
-  DAILY_FREE_GENERATIONS,
+  FREE_GENERATIONS_TOTAL,
   getCreditStatus,
 } from "@/lib/credits.functions";
 
@@ -35,7 +35,7 @@ export const Route = createFileRoute("/_authenticated/credits")({
       { property: "og:title", content: "Credits & plans — SiteToSocial" },
       {
         property: "og:description",
-        content: "Free daily generations plus credit packs for heavy social posting.",
+        content: "3 free lifetime generations plus credit packs for heavy social posting.",
       },
     ],
   }),
@@ -72,7 +72,7 @@ function CreditsPage() {
       <PaymentTestModeBanner />
       <h1 className="font-display text-2xl font-bold">Credits &amp; plans</h1>
       <p className="mt-2 text-sm text-muted-foreground">
-        Every account gets {DAILY_FREE_GENERATIONS} free generations. Need more? Credit
+        Every account gets {FREE_GENERATIONS_TOTAL} free generations in total (one time, no daily reset). Need more? Credit
         packs never expire.
       </p>
 
@@ -80,7 +80,7 @@ function CreditsPage() {
         <div className="rounded-2xl border border-border bg-card p-4">
           <p className="text-xs uppercase tracking-wide text-muted-foreground">Free left</p>
           <p className="mt-1 font-display text-2xl font-bold">
-            {isLoading ? "—" : `${data?.freeRemaining ?? 0}/${DAILY_FREE_GENERATIONS}`}
+            {isLoading ? "—" : `${data?.freeRemaining ?? 0}/${FREE_GENERATIONS_TOTAL}`}
           </p>
         </div>
         <div className="rounded-2xl border border-border bg-card p-4">
