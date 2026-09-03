@@ -44,11 +44,18 @@ export const Route = createFileRoute("/_authenticated/credits")({
 function CreditsPage() {
   const fetchStatus = useServerFn(getCreditStatus);
   const queryClient = useQueryClient();
+  const { session_id: sessionId } = Route.useSearch();
   const { data, isLoading } = useQuery({
     queryKey: ["credit-status"],
     queryFn: () => fetchStatus(),
   });
   const { openCheckout, closeCheckout, isOpen, checkoutElement } = useStripeCheckout();
+
+  useEffect(() => {
+    if (!sessionId) return;
+    queryClient.invalidateQueries({ queryKey: ["credit-status"] });
+    toast.success("Payment received — your credits will appear in a moment.");
+  }, [sessionId, queryClient]);
 
   const buy = (packId: string) => {
     openCheckout({
