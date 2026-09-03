@@ -78,7 +78,7 @@ export const generatePosts = createServerFn({ method: "POST" })
     const credit = Array.isArray(creditRows) ? creditRows[0] : creditRows;
     if (!credit?.allowed) {
       throw new Error(
-        "You've used your free generations for today. Grab a credit pack to keep going.",
+        "You've used your free generations. Grab a credit pack to keep going.",
       );
     }
     const refund = async () => {
