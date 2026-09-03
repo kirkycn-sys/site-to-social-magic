@@ -58,8 +58,10 @@ function CreditsPage() {
   }, [sessionId, queryClient]);
 
   const buy = (packId: string) => {
+    const priceId = PACK_PRICE_IDS[packId];
+    if (!priceId) return;
     openCheckout({
-      priceId: PACK_PRICE_IDS[packId],
+      priceId,
       returnUrl: `${window.location.origin}/credits?session_id={CHECKOUT_SESSION_ID}`,
     });
   };

@@ -65,10 +65,13 @@ export const createCheckoutSession = createServerFn({ method: "POST" })
       const email = userData.user?.email ?? undefined;
 
       const prices = await stripe.prices.list({ lookup_keys: [data.priceId] });
-      if (!prices.data.length) throw new Error("Price not found");
       const stripePrice = prices.data[0];
+      if (!stripePrice) throw new Error("Price not found");
 
-      const customerId = await resolveOrCreateCustomer(stripe, { email, userId });
+      const customerId = await resolveOrCreateCustomer(stripe, {
+        userId,
+        ...(email && { email }),
+      });
 
       const productId = typeof stripePrice.product === "string"
         ? stripePrice.product
