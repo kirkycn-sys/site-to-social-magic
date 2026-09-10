@@ -41,6 +41,84 @@ export function PostCard({
     }
   };
 
+  const downloadCombined = async () => {
+    if (!image) return;
+    const img = new Image();
+    img.src = image;
+    await img.decode();
+
+    const width = 1080;
+    const scale = width / img.naturalWidth;
+    const imgHeight = Math.round(img.naturalHeight * scale);
+    const pad = 56;
+    const bodySize = 34;
+    const lineHeight = Math.round(bodySize * 1.45);
+
+    const measure = document.createElement("canvas").getContext("2d")!;
+    measure.font = `500 ${bodySize}px "DM Sans", system-ui, sans-serif`;
+
+    const wrap = (text: string, maxWidth: number) => {
+      const lines: string[] = [];
+      for (const para of text.split("\n")) {
+        if (!para.trim()) {
+          lines.push("");
+          continue;
+        }
+        let line = "";
+        for (const word of para.split(/\s+/)) {
+          const next = line ? `${line} ${word}` : word;
+          if (measure.measureText(next).width > maxWidth && line) {
+            lines.push(line);
+            line = word;
+          } else {
+            line = next;
+          }
+        }
+        lines.push(line);
+      }
+      return lines;
+    };
+
+    const maxWidth = width - pad * 2;
+    const bodyLines = wrap(post.content, maxWidth);
+    const tagLines = post.hashtags.length
+      ? wrap(post.hashtags.map((h) => `#${h}`).join(" "), maxWidth)
+      : [];
+
+    const textBlock =
+      pad + bodyLines.length * lineHeight + (tagLines.length ? 16 + tagLines.length * lineHeight : 0) + pad;
+
+    const canvas = document.createElement("canvas");
+    canvas.width = width;
+    canvas.height = imgHeight + textBlock;
+    const ctx = canvas.getContext("2d")!;
+
+    ctx.fillStyle = "#12141a";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(img, 0, 0, width, imgHeight);
+
+    let y = imgHeight + pad + bodySize;
+    ctx.font = `500 ${bodySize}px "DM Sans", system-ui, sans-serif`;
+    ctx.fillStyle = "#f4f5f7";
+    for (const line of bodyLines) {
+      ctx.fillText(line, pad, y);
+      y += lineHeight;
+    }
+    if (tagLines.length) {
+      y += 16;
+      ctx.fillStyle = "#8fe388";
+      for (const line of tagLines) {
+        ctx.fillText(line, pad, y);
+        y += lineHeight;
+      }
+    }
+
+    const link = document.createElement("a");
+    link.href = canvas.toDataURL("image/png");
+    link.download = `sitetosocial-post-${index + 1}.png`;
+    link.click();
+  };
+
   const createImage = async () => {
     setBusy(true);
     try {
@@ -100,13 +178,14 @@ export function PostCard({
           {busy ? "Creating image…" : image ? "New image" : "Create image"}
         </Button>
         {image && (
-          <a
-            href={image}
-            download={`sitetosocial-post-${index + 1}.png`}
-            className="inline-flex h-8 items-center gap-1.5 rounded-md px-2.5 text-xs text-muted-foreground hover:text-foreground"
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={downloadCombined}
+            className="h-8 gap-1.5 px-2.5 text-xs text-muted-foreground hover:text-foreground"
           >
-            <Download className="size-3.5" /> Download
-          </a>
+            <Download className="size-3.5" /> Download post
+          </Button>
         )}
       </div>
     </article>
