@@ -76,7 +76,12 @@ function GenerationPage() {
           )}
           <div className="mt-5 space-y-3">
             {data.posts.map((post, index) => (
-              <PostCard key={post.id} post={post as GeneratedPost} index={index} />
+              <PostCard
+                key={post.id}
+                post={post as GeneratedPost}
+                index={index}
+                platform={data.generation!.platform}
+              />
             ))}
           </div>
         </>
