@@ -95,11 +95,13 @@ function Index() {
           className="mt-5 flex items-center justify-between rounded-2xl border border-border bg-surface px-4 py-3 text-sm"
         >
           <span className="text-muted-foreground">
-            {credits.data.freeRemaining > 0
-              ? `${credits.data.freeRemaining} of ${FREE_GENERATIONS_TOTAL} free generations left (one-time)`
-              : credits.data.credits > 0
-                ? `${credits.data.credits} credits left`
-                : "Out of free generations"}
+            {credits.data.unlimited
+              ? "Unlimited (owner account)"
+              : credits.data.freeRemaining > 0
+                ? `${credits.data.freeRemaining} of ${FREE_GENERATIONS_TOTAL} free generations left (one-time)`
+                : credits.data.credits > 0
+                  ? `${credits.data.credits} credits left`
+                  : "Out of free generations"}
           </span>
           <span className="font-medium text-accent">
             {credits.data.canGenerate ? "Plans" : "Get credits"}
