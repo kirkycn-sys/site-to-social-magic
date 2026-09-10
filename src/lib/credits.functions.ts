@@ -8,7 +8,12 @@ export const CREDIT_PACKS = [
   { id: "pro", credits: 200, price: "$29", blurb: "Best value for agencies" },
 ] as const;
 
-export type CreditStatus = { credits: number; freeRemaining: number; canGenerate: boolean };
+export type CreditStatus = {
+  credits: number;
+  freeRemaining: number;
+  canGenerate: boolean;
+  unlimited: boolean;
+};
 
 export const getCreditStatus = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
@@ -18,7 +23,13 @@ export const getCreditStatus = createServerFn({ method: "GET" })
     });
     if (error) throw new Error(error.message);
     const row = Array.isArray(data) ? data[0] : data;
+    const unlimited = Boolean((row as { unlimited?: boolean } | undefined)?.unlimited);
     const credits = row?.credits ?? 0;
     const freeRemaining = row?.free_remaining ?? 0;
-    return { credits, freeRemaining, canGenerate: credits > 0 || freeRemaining > 0 };
+    return {
+      credits,
+      freeRemaining,
+      unlimited,
+      canGenerate: unlimited || credits > 0 || freeRemaining > 0,
+    };
   });
