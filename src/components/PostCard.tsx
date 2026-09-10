@@ -1,7 +1,9 @@
 import { useState } from "react";
-import { Check, Copy } from "lucide-react";
+import { Check, Copy, Download, ImageIcon, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { useServerFn } from "@tanstack/react-start";
 import { Button } from "@/components/ui/button";
+import { generatePostImage } from "@/lib/post-image.functions";
 
 export type GeneratedPost = {
   id?: string;
@@ -10,8 +12,19 @@ export type GeneratedPost = {
   hashtags: string[];
 };
 
-export function PostCard({ post, index }: { post: GeneratedPost; index: number }) {
+export function PostCard({
+  post,
+  index,
+  platform,
+}: {
+  post: GeneratedPost;
+  index: number;
+  platform?: string;
+}) {
   const [copied, setCopied] = useState(false);
+  const [image, setImage] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+  const makeImage = useServerFn(generatePostImage);
 
   const fullText = [post.content, post.hashtags.map((h) => `#${h}`).join(" ")]
     .filter(Boolean)
@@ -25,6 +38,18 @@ export function PostCard({ post, index }: { post: GeneratedPost; index: number }
       setTimeout(() => setCopied(false), 1600);
     } catch {
       toast.error("Copy failed — select the text manually");
+    }
+  };
+
+  const createImage = async () => {
+    setBusy(true);
+    try {
+      const result = await makeImage({ data: { content: post.content, platform } });
+      setImage(result.dataUrl);
+    } catch (error) {
+      toast.error((error as Error).message || "Couldn't create the image");
+    } finally {
+      setBusy(false);
     }
   };
 
@@ -54,6 +79,36 @@ export function PostCard({ post, index }: { post: GeneratedPost; index: number }
           ))}
         </p>
       )}
+
+      {image && (
+        <img
+          src={image}
+          alt={`Visual for post ${index + 1}`}
+          className="mt-3 w-full rounded-xl border border-border object-cover"
+        />
+      )}
+
+      <div className="mt-3 flex flex-wrap items-center gap-2">
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={createImage}
+          disabled={busy}
+          className="h-8 gap-1.5 px-2.5 text-xs"
+        >
+          {busy ? <Loader2 className="size-3.5 animate-spin" /> : <ImageIcon className="size-3.5" />}
+          {busy ? "Creating image…" : image ? "New image" : "Create image"}
+        </Button>
+        {image && (
+          <a
+            href={image}
+            download={`sitetosocial-post-${index + 1}.png`}
+            className="inline-flex h-8 items-center gap-1.5 rounded-md px-2.5 text-xs text-muted-foreground hover:text-foreground"
+          >
+            <Download className="size-3.5" /> Download
+          </a>
+        )}
+      </div>
     </article>
   );
 }

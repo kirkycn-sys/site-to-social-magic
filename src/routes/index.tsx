@@ -190,7 +190,7 @@ function Index() {
           </div>
           <div className="mt-3 space-y-3">
             {posts.map((post, index) => (
-              <PostCard key={post.id ?? index} post={post} index={index} />
+              <PostCard key={post.id ?? index} post={post} index={index} platform={platform} />
             ))}
           </div>
         </section>
