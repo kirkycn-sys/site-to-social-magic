@@ -80,13 +80,17 @@ function CreditsPage() {
         <div className="rounded-2xl border border-border bg-card p-4">
           <p className="text-xs uppercase tracking-wide text-muted-foreground">Free left</p>
           <p className="mt-1 font-display text-2xl font-bold">
-            {isLoading ? "—" : `${data?.freeRemaining ?? 0}/${FREE_GENERATIONS_TOTAL}`}
+            {isLoading
+              ? "—"
+              : data?.unlimited
+                ? "∞"
+                : `${data?.freeRemaining ?? 0}/${FREE_GENERATIONS_TOTAL}`}
           </p>
         </div>
         <div className="rounded-2xl border border-border bg-card p-4">
           <p className="text-xs uppercase tracking-wide text-muted-foreground">Credits</p>
           <p className="mt-1 font-display text-2xl font-bold">
-            {isLoading ? "—" : (data?.credits ?? 0)}
+            {isLoading ? "—" : data?.unlimited ? "Unlimited" : (data?.credits ?? 0)}
           </p>
         </div>
       </div>
