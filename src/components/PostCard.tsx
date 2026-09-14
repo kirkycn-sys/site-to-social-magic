@@ -199,15 +199,40 @@ export function PostCard({
           {busy ? <Loader2 className="size-3.5 animate-spin" /> : <ImageIcon className="size-3.5" />}
           {busy ? "Creating image…" : image ? "New image" : "Create image"}
         </Button>
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={() => fileInput.current?.click()}
+          className="h-8 gap-1.5 px-2.5 text-xs"
+        >
+          <Upload className="size-3.5" /> Use my image
+        </Button>
+        <input
+          ref={fileInput}
+          type="file"
+          accept="image/*"
+          onChange={onPickFile}
+          className="hidden"
+        />
         {image && (
-          <Button
-            size="sm"
-            variant="ghost"
-            onClick={downloadCombined}
-            className="h-8 gap-1.5 px-2.5 text-xs text-muted-foreground hover:text-foreground"
-          >
-            <Download className="size-3.5" /> Download post
-          </Button>
+          <>
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={downloadCombined}
+              className="h-8 gap-1.5 px-2.5 text-xs text-muted-foreground hover:text-foreground"
+            >
+              <Download className="size-3.5" /> Download post
+            </Button>
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={() => setImage(null)}
+              className="h-8 gap-1.5 px-2.5 text-xs text-muted-foreground hover:text-foreground"
+            >
+              <X className="size-3.5" /> Remove
+            </Button>
+          </>
         )}
       </div>
     </article>
