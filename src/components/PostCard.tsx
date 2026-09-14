@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Check, Copy, Download, ImageIcon, Loader2 } from "lucide-react";
+import { useRef, useState } from "react";
+import { Check, Copy, Download, ImageIcon, Loader2, Upload, X } from "lucide-react";
 import { toast } from "sonner";
 import { useServerFn } from "@tanstack/react-start";
 import { Button } from "@/components/ui/button";
@@ -24,7 +24,29 @@ export function PostCard({
   const [copied, setCopied] = useState(false);
   const [image, setImage] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const fileInput = useRef<HTMLInputElement>(null);
   const makeImage = useServerFn(generatePostImage);
+
+  const onPickFile = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please choose an image file");
+      return;
+    }
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error("That image is larger than 10MB");
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => {
+      setImage(reader.result as string);
+      toast.success("Image added");
+    };
+    reader.onerror = () => toast.error("Couldn't read that image");
+    reader.readAsDataURL(file);
+  };
 
   const fullText = [post.content, post.hashtags.map((h) => `#${h}`).join(" ")]
     .filter(Boolean)
@@ -177,15 +199,40 @@ export function PostCard({
           {busy ? <Loader2 className="size-3.5 animate-spin" /> : <ImageIcon className="size-3.5" />}
           {busy ? "Creating image…" : image ? "New image" : "Create image"}
         </Button>
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={() => fileInput.current?.click()}
+          className="h-8 gap-1.5 px-2.5 text-xs"
+        >
+          <Upload className="size-3.5" /> Use my image
+        </Button>
+        <input
+          ref={fileInput}
+          type="file"
+          accept="image/*"
+          onChange={onPickFile}
+          className="hidden"
+        />
         {image && (
-          <Button
-            size="sm"
-            variant="ghost"
-            onClick={downloadCombined}
-            className="h-8 gap-1.5 px-2.5 text-xs text-muted-foreground hover:text-foreground"
-          >
-            <Download className="size-3.5" /> Download post
-          </Button>
+          <>
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={downloadCombined}
+              className="h-8 gap-1.5 px-2.5 text-xs text-muted-foreground hover:text-foreground"
+            >
+              <Download className="size-3.5" /> Download post
+            </Button>
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={() => setImage(null)}
+              className="h-8 gap-1.5 px-2.5 text-xs text-muted-foreground hover:text-foreground"
+            >
+              <X className="size-3.5" /> Remove
+            </Button>
+          </>
         )}
       </div>
     </article>
