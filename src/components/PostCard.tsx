@@ -25,6 +25,8 @@ export function PostCard({
   const [copied, setCopied] = useState(false);
   const [image, setImage] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [style, setStyle] = useState<ImageStyleId>("photo");
+  const [description, setDescription] = useState("");
   const fileInput = useRef<HTMLInputElement>(null);
   const makeImage = useServerFn(generatePostImage);
 
