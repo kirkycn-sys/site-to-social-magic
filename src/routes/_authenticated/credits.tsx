@@ -123,6 +123,31 @@ function CreditsPage() {
         ))}
       </div>
 
+      <h2 className="mt-8 font-display text-lg font-semibold">Multi-office bundles</h2>
+      <p className="mt-1 text-sm text-muted-foreground">
+        Running 3 or more locations? Save 20% versus buying each office separately.
+      </p>
+      <div className="mt-3 space-y-3">
+        {OFFICE_BUNDLES.map((bundle) => (
+          <div
+            key={bundle.id}
+            className="flex items-center justify-between rounded-2xl border border-accent/40 bg-surface p-4"
+          >
+            <div>
+              <p className="font-display text-base font-semibold">
+                {bundle.offices} offices · {bundle.credits} generations
+              </p>
+              <p className="text-xs text-muted-foreground">
+                {bundle.blurb} — <span className="line-through">{bundle.was}</span> save 20%
+              </p>
+            </div>
+            <Button size="sm" className="rounded-xl" onClick={() => buy(bundle.id)}>
+              <Zap className="size-4" /> {bundle.price}
+            </Button>
+          </div>
+        ))}
+      </div>
+
       {isOpen && (
         <div className="fixed inset-0 z-50 flex items-end justify-center bg-background/80 backdrop-blur-sm sm:items-center">
           <div className="relative w-full max-w-lg p-3">
