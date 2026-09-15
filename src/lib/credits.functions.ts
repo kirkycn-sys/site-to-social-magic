@@ -8,6 +8,13 @@ export const CREDIT_PACKS = [
   { id: "pro", credits: 200, price: "$29", blurb: "Best value for agencies" },
 ] as const;
 
+// Multi-location bundles: 50 generations per office at 20% off the $9 single price
+export const OFFICE_BUNDLES = [
+  { id: "offices3", offices: 3, credits: 150, price: "$21.60", was: "$27", blurb: "3 locations" },
+  { id: "offices5", offices: 5, credits: 250, price: "$36", was: "$45", blurb: "5 locations" },
+  { id: "offices10", offices: 10, credits: 500, price: "$72", was: "$90", blurb: "10 locations" },
+] as const;
+
 export type CreditStatus = {
   credits: number;
   freeRemaining: number;

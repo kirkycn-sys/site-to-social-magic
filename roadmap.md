@@ -8,4 +8,6 @@
 - [x] Charge 20 credits per video (paid credits only, no free videos)
 - [x] Wire Stripe checkout for credit packs (products, embedded checkout, webhook grants credits)
 - [x] On-demand AI image per post (free, plain image, matches the post copy)
+- [x] Choose photo style + describe the image before generating
+- [x] Multi-office bundles (3/5/10 locations, 20% off the $9 single-office price)
 - [ ] Auto-post to connected social accounts (needs platform developer apps + approval — awaiting user decision)

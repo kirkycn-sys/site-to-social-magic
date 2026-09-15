@@ -6,6 +6,9 @@ import { type StripeEnv, createStripeClient, getStripeErrorMessage } from "@/lib
 export const PACK_CREDITS: Record<string, number> = {
   credits_50_pack: 50,
   credits_200_pack: 200,
+  credits_150_offices3: 150,
+  credits_250_offices5: 250,
+  credits_500_offices10: 500,
 };
 
 type CheckoutSessionResult =
