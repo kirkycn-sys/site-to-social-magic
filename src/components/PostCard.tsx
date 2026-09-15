@@ -147,7 +147,14 @@ export function PostCard({
   const createImage = async () => {
     setBusy(true);
     try {
-      const result = await makeImage({ data: { content: post.content, platform } });
+      const result = await makeImage({
+        data: {
+          content: post.content,
+          platform,
+          style,
+          ...(description.trim() && { description: description.trim() }),
+        },
+      });
       setImage(result.dataUrl);
     } catch (error) {
       toast.error((error as Error).message || "Couldn't create the image");
