@@ -10,6 +10,7 @@ import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
 import { useStripeCheckout } from "@/hooks/useStripeCheckout";
 import {
   CREDIT_PACKS,
+  OFFICE_BUNDLES,
   FREE_GENERATIONS_TOTAL,
   getCreditStatus,
 } from "@/lib/credits.functions";
@@ -17,6 +18,9 @@ import {
 const PACK_PRICE_IDS: Record<string, string> = {
   starter: "credits_50_pack",
   pro: "credits_200_pack",
+  offices3: "credits_150_offices3",
+  offices5: "credits_250_offices5",
+  offices10: "credits_500_offices10",
 };
 
 export const Route = createFileRoute("/_authenticated/credits")({
