@@ -3,7 +3,8 @@ import { Check, Copy, Download, ImageIcon, Loader2, Upload, X } from "lucide-rea
 import { toast } from "sonner";
 import { useServerFn } from "@tanstack/react-start";
 import { Button } from "@/components/ui/button";
-import { generatePostImage } from "@/lib/post-image.functions";
+import { Input } from "@/components/ui/input";
+import { generatePostImage, IMAGE_STYLES, type ImageStyleId } from "@/lib/post-image.functions";
 
 export type GeneratedPost = {
   id?: string;
@@ -24,6 +25,8 @@ export function PostCard({
   const [copied, setCopied] = useState(false);
   const [image, setImage] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [style, setStyle] = useState<ImageStyleId>("photo");
+  const [description, setDescription] = useState("");
   const fileInput = useRef<HTMLInputElement>(null);
   const makeImage = useServerFn(generatePostImage);
 
@@ -144,7 +147,14 @@ export function PostCard({
   const createImage = async () => {
     setBusy(true);
     try {
-      const result = await makeImage({ data: { content: post.content, platform } });
+      const result = await makeImage({
+        data: {
+          content: post.content,
+          platform,
+          style,
+          ...(description.trim() && { description: description.trim() }),
+        },
+      });
       setImage(result.dataUrl);
     } catch (error) {
       toast.error((error as Error).message || "Couldn't create the image");
@@ -187,6 +197,30 @@ export function PostCard({
           className="mt-3 w-full rounded-xl border border-border object-cover"
         />
       )}
+
+      <div className="mt-3 flex flex-wrap gap-1.5">
+        {IMAGE_STYLES.map((s) => (
+          <button
+            key={s.id}
+            type="button"
+            onClick={() => setStyle(s.id)}
+            className={
+              s.id === style
+                ? "rounded-full bg-primary px-2.5 py-1 text-xs font-medium text-primary-foreground"
+                : "rounded-full border border-border bg-card px-2.5 py-1 text-xs font-medium text-muted-foreground transition hover:text-foreground"
+            }
+          >
+            {s.label}
+          </button>
+        ))}
+      </div>
+      <Input
+        value={description}
+        onChange={(e) => setDescription(e.target.value)}
+        placeholder="Optional: what should the photo show?"
+        maxLength={200}
+        className="mt-2 h-9 rounded-xl border-border bg-surface text-sm"
+      />
 
       <div className="mt-3 flex flex-wrap items-center gap-2">
         <Button
