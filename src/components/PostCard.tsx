@@ -3,7 +3,8 @@ import { Check, Copy, Download, ImageIcon, Loader2, Upload, X } from "lucide-rea
 import { toast } from "sonner";
 import { useServerFn } from "@tanstack/react-start";
 import { Button } from "@/components/ui/button";
-import { generatePostImage } from "@/lib/post-image.functions";
+import { Input } from "@/components/ui/input";
+import { generatePostImage, IMAGE_STYLES, type ImageStyleId } from "@/lib/post-image.functions";
 
 export type GeneratedPost = {
   id?: string;
