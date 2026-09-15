@@ -37,10 +37,14 @@ export const generatePostImage = createServerFn({ method: "POST" })
 
     const shape = RATIO[data.platform ?? ""] ?? "1:1 square";
 
+    const style = IMAGE_STYLES.find((s) => s.id === data.style);
+    const wish = data.description?.trim();
+
     const prompt = [
       "Create a polished, scroll-stopping social media image that visually illustrates the post below.",
       `Format: ${shape}.`,
-      "Style: modern, clean, high quality photography or tasteful graphic illustration.",
+      `Style: ${style ? style.prompt : "modern, clean, high quality photography or tasteful graphic illustration"}.`,
+      ...(wish ? [`The image must show: ${wish}.`] : []),
       "Do not render any text, letters, words, watermarks or logos in the image.",
       "",
       "POST COPY:",
