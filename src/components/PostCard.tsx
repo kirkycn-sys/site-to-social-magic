@@ -198,6 +198,30 @@ export function PostCard({
         />
       )}
 
+      <div className="mt-3 flex flex-wrap gap-1.5">
+        {IMAGE_STYLES.map((s) => (
+          <button
+            key={s.id}
+            type="button"
+            onClick={() => setStyle(s.id)}
+            className={
+              s.id === style
+                ? "rounded-full bg-primary px-2.5 py-1 text-xs font-medium text-primary-foreground"
+                : "rounded-full border border-border bg-card px-2.5 py-1 text-xs font-medium text-muted-foreground transition hover:text-foreground"
+            }
+          >
+            {s.label}
+          </button>
+        ))}
+      </div>
+      <Input
+        value={description}
+        onChange={(e) => setDescription(e.target.value)}
+        placeholder="Optional: what should the photo show?"
+        maxLength={200}
+        className="mt-2 h-9 rounded-xl border-border bg-surface text-sm"
+      />
+
       <div className="mt-3 flex flex-wrap items-center gap-2">
         <Button
           size="sm"
