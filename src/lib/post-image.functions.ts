@@ -2,9 +2,22 @@ import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { z } from "zod";
 
+export const IMAGE_STYLES = [
+  { id: "photo", label: "Photo", prompt: "realistic high-end photography, natural lighting, shallow depth of field" },
+  { id: "illustration", label: "Illustration", prompt: "clean vector-style illustration, flat shapes, tasteful colour palette" },
+  { id: "graphic", label: "Bold graphic", prompt: "bold graphic poster design, strong shapes and high contrast colour blocking" },
+  { id: "minimal", label: "Minimal", prompt: "minimal composition, lots of negative space, soft neutral tones" },
+  { id: "render3d", label: "3D render", prompt: "glossy 3D render, soft studio lighting, subtle gradients" },
+  { id: "retro", label: "Retro", prompt: "retro print aesthetic, grainy texture, vintage colour palette" },
+] as const;
+
+export type ImageStyleId = (typeof IMAGE_STYLES)[number]["id"];
+
 const InputSchema = z.object({
   content: z.string().min(4).max(2000),
   platform: z.string().min(1).max(40).optional(),
+  style: z.string().max(40).optional(),
+  description: z.string().max(400).optional(),
 });
 
 const RATIO: Record<string, string> = {
