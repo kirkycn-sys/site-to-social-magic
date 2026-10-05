@@ -48,27 +48,13 @@ function extractReadableText(html: string) {
   };
 }
 
-function extractOutputText(payload: unknown): string {
-  const data = payload as {
-    output_text?: string;
-    output?: Array<{ content?: Array<{ type?: string; text?: string }> }>;
-  };
-  if (typeof data.output_text === "string" && data.output_text.trim()) return data.output_text;
-  const chunks: string[] = [];
-  for (const item of data.output ?? []) {
-    for (const part of item.content ?? []) {
-      if (typeof part.text === "string") chunks.push(part.text);
-    }
-  }
-  return chunks.join("");
-}
 
 export const generatePosts = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => InputSchema.parse(input))
   .handler(async ({ data, context }) => {
-    const apiKey = process.env["LOVABLE_API_KEY"];
-    if (!apiKey) throw new Error("AI is not configured for this app.");
+    const apiKey = process.env["OPENAI_API_KEY"];
+    if (!apiKey) throw new Error("OpenAI is not configured for this app.");
 
     const url = normalizeUrl(data.url);
 
@@ -108,15 +94,15 @@ export const generatePosts = createServerFn({ method: "POST" })
 
     const platform = PLATFORMS.find((p) => p.id === data.platform)!;
 
-    const aiRes = await fetch("https://ai.gateway.lovable.dev/v1/responses", {
+    const aiRes = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
       headers: {
         "content-type": "application/json",
-        "Lovable-API-Key": apiKey,
+        authorization: `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
-        model: "openai/gpt-5.4-mini",
-        input: [
+        model: "gpt-4o-mini",
+        messages: [
           {
             role: "system",
             content:
@@ -138,9 +124,9 @@ export const generatePosts = createServerFn({ method: "POST" })
             ].join("\n"),
           },
         ],
-        text: {
-          format: {
-            type: "json_schema",
+        response_format: {
+          type: "json_schema",
+          json_schema: {
             name: "social_posts",
             strict: true,
             schema: {
@@ -173,13 +159,13 @@ export const generatePosts = createServerFn({ method: "POST" })
       if (aiRes.status === 429) {
         throw new Error("Too many requests right now — wait a moment and try again.");
       }
-      if (aiRes.status === 402) {
-        throw new Error("AI credits are exhausted. Add credits in Lovable to keep generating.");
-      }
       throw new Error(`AI generation failed (${aiRes.status}). ${detail.slice(0, 200)}`);
     }
 
-    const parsed = JSON.parse(extractOutputText(await aiRes.json())) as {
+    const aiJson = (await aiRes.json()) as {
+      choices?: Array<{ message?: { content?: string } }>;
+    };
+    const parsed = JSON.parse(aiJson.choices?.[0]?.message?.content ?? "") as {
       summary: string;
       posts: Array<{ content: string; hashtags: string[] }>;
     };
