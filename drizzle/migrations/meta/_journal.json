@@ -1,0 +1,13 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1794842171427,
+      "tag": "0000_add_free_admins",
+      "breakpoints": true
+    }
+  ]
+}
